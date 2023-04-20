@@ -10,84 +10,82 @@
 
 
 
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <title>AR</title>
-    <style>
-      #canvas {
-        position: absolute;
-        top: 0;
-        left: 0;
-        height: 100%;
-        width: 100%;
-      }
-    </style>
-  </head>
-  <body>
-    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-    <script>
-      AFRAME.registerComponent("tap-place", {
-        init: function () {
-          const ground = document.querySelector("#ground");
-          const planeSize = 1;
 
-          this.el.addEventListener("click", (event) => {
-            // Create new entity for the new object
-            const newElement = document.createElement("a-entity");
-            newElement.setAttribute("position", event.detail.intersection.point);
-            newElement.setAttribute("gltf-model", "url(cube.glb)");
-            newElement.setAttribute("scale", "0.5 0.5 0.5");
+ <!DOCTYPE html>
+ <html>
+   <head>
+     <meta charset="UTF-8" />
+     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
+   </head>
+   <body>
+     <a-scene
+       vr-mode-ui="enabled: false"
+       renderer="logarithmicDepthBuffer: true;"
+       embedded
+       arjs="sourceType: webcam; detectionMode: mono_and_matrix; matrixCodeType: 3x3;"
+     >
+       <a-assets>
+         <a-asset-item id="fox-model" src="cube.glb"></a-asset-item>
+       </a-assets>
+ 
+       <a-nft
+         type="nft"
+         url="marker_images/hiro.patt"
+         smooth="true"
+         smoothCount="10"
+         smoothTolerance=".01"
+         smoothThreshold="5"
+       >
+         <a-entity
+           id="animated-fox"
+           gltf-model="#fox-model"
+           animation-mixer
+           scale="5 5 5"
+           position="0 0 0"
+         ></a-entity>
+       </a-nft>
+ 
+       <a-plane
+         id="ground"
+         height="1"
+         width="1"
+         color="#7BC8A4"
+         rotation="-90 0 0"
+         shadow
+         visible="false"
+         material="opacity: 0.3;"
+       ></a-plane>
+ 
+       <a-entity camera></a-entity>
+     </a-scene>
+ 
+     <script>
+       AFRAME.registerComponent("tap-place", {
+         init: function () {
+           const ground = document.querySelector("#ground");
+           const planeSize = 1;
+ 
+           this.el.addEventListener("click", (event) => {
+             // Create new entity for the new object
+             const newElement = document.createElement("a-entity");
+             newElement.setAttribute("position", event.detail.intersection.point);
+             newElement.setAttribute("gltf-model", "#fox-model");
+             newElement.setAttribute("scale", "0.5 0.5 0.5");
+ 
+             // Make the new entity "placeable" as well.
+             newElement.setAttribute("tap-place", "");
+ 
+             // Append the new entity to the ground.
+             ground.appendChild(newElement);
+           });
+         },
+       });
+     </script>
+   </body>
+ </html>
+ 
 
-            // Make the new entity "placeable" as well.
-            newElement.setAttribute("tap-place", "");
 
-            // Append the new entity to the ground.
-            ground.appendChild(newElement);
-          });
-        },
-      });
-
-      AFRAME.registerComponent("ar", {
-        init: function () {
-          const scene = this.el.sceneEl;
-          const renderer = scene.renderer;
-          const gl = renderer.getContext();
-
-          // Enable the ARModule.
-          const arModule = renderer.xr;
-          arModule.enabled = true;
-
-          // Configure the hit test.
-          const hitTestSource = arModule.createHitTestSource("hitTestSource");
-          const hitTestRenderer = new THREE.WebGL1Renderer({ xrCompatible: true });
-          hitTestRenderer.setSize(gl.drawingBufferWidth, gl.drawingBufferHeight);
-          hitTestRenderer.setClearColor(0xffffff, 0);
-          scene.object3D.add(new THREE.SceneUtils.CameraHelper(hitTestSource._inputSource._poseModelMatrix));
-
-          // Configure the ground for tap-place.
-          const ground = document.querySelector("#ground");
-          ground.setAttribute("tap-place", "");
-
-          // Run the animation loop.
-          this.tick = function (time, timeDelta) {
-            hitTestRenderer.render(scene.object3D, hitTestSource._inputSource._poseModelMatrix);
-
-            // Call the animation loop again on the next frame.
-            renderer.setAnimationLoop(this.tick);
-          };
-          renderer.setAnimationLoop(this.tick);
-        },
-      });
-    </script>
-
-    <a-scene ar>
-      <a-entity id="camera" camera="active: true"></a-entity>
-
-      <a-entity id="ground" geometry="primitive: plane; height: 100; width: 100" material="visible: false;"></a-entity>
-    </a-scene>
-  </body>
-</html>
 
 
