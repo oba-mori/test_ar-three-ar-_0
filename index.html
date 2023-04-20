@@ -8,58 +8,18 @@
 
 
 
+ 
 
 
 
  <!DOCTYPE html>
- <html>
+ <html lang="en">
    <head>
      <meta charset="UTF-8" />
+     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+     <title>AR.js + A-Frame: Placement Example</title>
      <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
-   </head>
-   <body>
-     <a-scene
-       vr-mode-ui="enabled: false"
-       renderer="logarithmicDepthBuffer: true;"
-       embedded
-       arjs="sourceType: webcam; detectionMode: mono_and_matrix; matrixCodeType: 3x3;"
-     >
-       <a-assets>
-         <a-asset-item id="fox-model" src="cube.glb"></a-asset-item>
-       </a-assets>
- 
-       <a-nft
-         type="nft"
-         url="marker_images/hiro.patt"
-         smooth="true"
-         smoothCount="10"
-         smoothTolerance=".01"
-         smoothThreshold="5"
-       >
-         <a-entity
-           id="animated-fox"
-           gltf-model="#fox-model"
-           animation-mixer
-           scale="5 5 5"
-           position="0 0 0"
-         ></a-entity>
-       </a-nft>
- 
-       <a-plane
-         id="ground"
-         height="1"
-         width="1"
-         color="#7BC8A4"
-         rotation="-90 0 0"
-         shadow
-         visible="false"
-         material="opacity: 0.3;"
-       ></a-plane>
- 
-       <a-entity camera></a-entity>
-     </a-scene>
- 
+     <script src="https://cdn.rawgit.com/jeromeetienne/AR.js/2.0.5/aframe/build/aframe-ar.js"></script>
      <script>
        AFRAME.registerComponent("tap-place", {
          init: function () {
@@ -70,7 +30,7 @@
              // Create new entity for the new object
              const newElement = document.createElement("a-entity");
              newElement.setAttribute("position", event.detail.intersection.point);
-             newElement.setAttribute("gltf-model", "#fox-model");
+             newElement.setAttribute("gltf-model", "url(cube.glb)");
              newElement.setAttribute("scale", "0.5 0.5 0.5");
  
              // Make the new entity "placeable" as well.
@@ -82,9 +42,35 @@
          },
        });
      </script>
+   </head>
+   <body>
+     <a-scene embedded arjs>
+       <a-assets>
+         <a-asset-item id="cube" src="cube.glb"></a-asset-item>
+       </a-assets>
+ 
+       <a-plane
+         id="ground"
+         position="0 0 0"
+         rotation="-90 0 0"
+         width="10"
+         height="10"
+         color="#7BC8A4"
+         shadow
+         material="opacity: 0.3"
+         tap-place
+       ></a-plane>
+ 
+       <a-entity camera></a-entity>
+     </a-scene>
    </body>
  </html>
  
+
+
+
+
+
 
 
 
