@@ -10,63 +10,73 @@
 
  
 
-
-
  <!DOCTYPE html>
- <html lang="en">
+ <html>
    <head>
-     <meta charset="UTF-8" />
-     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-     <title>AR.js + A-Frame: Placement Example</title>
+     <title>AR.js and Three.js Markerless AR Example</title>
      <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-     <script src="https://cdn.rawgit.com/jeromeetienne/AR.js/2.0.5/aframe/build/aframe-ar.js"></script>
-     <script>
-       AFRAME.registerComponent("tap-place", {
-         init: function () {
-           const ground = document.querySelector("#ground");
-           const planeSize = 1;
- 
-           this.el.addEventListener("click", (event) => {
-             // Create new entity for the new object
-             const newElement = document.createElement("a-entity");
-             newElement.setAttribute("position", event.detail.intersection.point);
-             newElement.setAttribute("gltf-model", "url(cube.glb)");
-             newElement.setAttribute("scale", "0.5 0.5 0.5");
- 
-             // Make the new entity "placeable" as well.
-             newElement.setAttribute("tap-place", "");
- 
-             // Append the new entity to the ground.
-             ground.appendChild(newElement);
-           });
-         },
-       });
-     </script>
+     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.6.1/mediapipe.js"></script>
+     <script src="https://unpkg.com/ar.js/aframe/build/aframe-ar-nft.js"></script>
+     <script src="https://cdn.jsdelivr.net/npm/three/build/three.min.js"></script>
    </head>
-   <body>
-     <a-scene embedded arjs>
+   <body style="margin: 0;">
+     <a-scene
+       vr-mode-ui="enabled: false"
+       embedded
+       arjs="sourceType: webcam; detectionMode: mono_and_matrix; matrixCodeType: 3x3;"
+     >
        <a-assets>
-         <a-asset-item id="cube" src="cube.glb"></a-asset-item>
+         <a-asset-item id="car" src="./cube.glb"></a-asset-item>
        </a-assets>
- 
+       <a-marker-camera preset="custom" type="pattern">
+         <a-entity
+           gltf-model="#car"
+           scale="0.05 0.05 0.05"
+           position="0 0 0"
+         ></a-entity>
+       </a-marker-camera>
+       <a-camera
+         id="camera"
+         cursor="rayOrigin: mouse"
+         raycaster="objects: .collidable"
+       >
+         <a-cursor></a-cursor>
+       </a-camera>
        <a-plane
          id="ground"
+         class="collidable"
          position="0 0 0"
          rotation="-90 0 0"
-         width="10"
-         height="10"
+         width="50"
+         height="50"
          color="#7BC8A4"
-         shadow
-         material="opacity: 0.3"
-         tap-place
        ></a-plane>
+       <script>
+         AFRAME.registerComponent("tap-place", {
+           init: function () {
+             const ground = document.querySelector("#ground");
+             const planeSize = 1;
  
-       <a-entity camera></a-entity>
+             this.el.addEventListener("click", (event) => {
+               // Create new entity for the new object
+               const newElement = document.createElement("a-entity");
+               newElement.setAttribute("position", event.detail.intersection.point);
+               newElement.setAttribute("gltf-model", "#car");
+               newElement.setAttribute("scale", "0.05 0.05 0.05");
+ 
+               // Make the new entity "placeable" as well.
+               newElement.setAttribute("tap-place", "");
+ 
+               // Append the new entity to the ground.
+               ground.appendChild(newElement);
+             });
+           },
+         });
+       </script>
      </a-scene>
    </body>
  </html>
  
-
 
 
 
